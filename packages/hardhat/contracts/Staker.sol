@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.4;
+pragma solidity ^0.8.4;
 
-import "hardhat/console.sol";
+
 import "./ExampleExternalContract.sol";
 
 contract Staker {
@@ -69,12 +69,12 @@ contract Staker {
   function withdraw() public withdrawalDeadlineReached(true) claimDeadlineReached(false) notCompleted {
     require(balances[msg.sender] > 0, "You have no balance to withdraw!");
     uint256 individualBalance = balances[msg.sender];
-    uint256 indBalanceRewards = individualBalance + ((block.timestamp-depositTimestamps[msg.sender]) * rewardRatePerSecond);
+    uint256 indBalanceRewards = individualBalance + ((block.timestamp-depositTimestamps[msg.sender]) * rewardRatePerBlock);
     balances[msg.sender] = 0;
 
     // Transfer all ETH via call! (not transfer) cc: https://solidity-by-example.org/sending-ether
     (bool sent, bytes memory data) = msg.sender.call{value: indBalanceRewards}("");
-    require(sent, "RIP; withdrawal failed :( ");
+    require(sent, "withdrawal failed :( ");
   }
 
   /*
